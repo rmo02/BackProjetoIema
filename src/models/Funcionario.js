@@ -10,10 +10,14 @@ const Funcionario = sequelize.define('Funcionarios', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  foto: DataTypes.STRING,
+  praca: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  foto: DataTypes.STRING, // Nome do arquivo da imagem
   telefones: {
-    type: DataTypes.JSON, // Use JSON para armazenar números de telefone
-    defaultValue: [], // Valor padrão é um array vazio
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    defaultValue: [],
   },
 });
 

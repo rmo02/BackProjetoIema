@@ -4,10 +4,11 @@ const Telefone = require('../models/Telefone');
 // Cria um novo funcionário
 exports.createEmployee = async (req, res) => {
   try {
-    const { nome, cargo, foto, telefones } = req.body;
+    const { nome, praca, cargo, telefones } = req.body;
+    const foto = req.file.filename; // Obtém o nome do arquivo da imagem do objeto de upload
 
     // Crie o funcionário, incluindo os telefones no objeto de criação
-    const novoFuncionario = await Funcionario.create({ nome, cargo, foto, telefones });
+    const novoFuncionario = await Funcionario.create({ nome, cargo, praca, foto,  telefones: JSON.parse(telefones),});
 
     res.status(201).json({ message: 'Funcionário adicionado com sucesso', employeeId: novoFuncionario.id });
   } catch (error) {
@@ -45,7 +46,8 @@ exports.getEmployeeById = async (req, res) => {
 // Atualiza um funcionário por ID
 exports.updateEmployee = async (req, res) => {
   const employeeId = req.params.id;
-  const { nome, cargo, foto, telefones } = req.body;
+  const { nome, cargo, praca, telefones } = req.body;
+  let foto = req.file ? req.file.filename : null; // Obtém o nome do novo arquivo de imagem, se fornecido
 
   try {
     const funcionario = await Funcionario.findByPk(employeeId);
@@ -60,11 +62,14 @@ exports.updateEmployee = async (req, res) => {
     if (cargo) {
       funcionario.cargo = cargo;
     }
+    if (praca) {
+      funcionario.praca = praca;
+    }
     if (foto) {
       funcionario.foto = foto;
     }
     if (telefones) {
-      funcionario.telefones = telefones; // Corrija para 'funcionario.telefones'
+      funcionario.telefones = JSON.parse(telefones);
     }
 
     await funcionario.save();
