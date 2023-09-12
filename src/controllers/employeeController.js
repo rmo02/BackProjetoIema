@@ -18,10 +18,20 @@ exports.createEmployee = async (req, res) => {
 };
 
 // Obtém todos os funcionários
+// Obtém todos os funcionários
 exports.getAllEmployees = async (req, res) => {
   try {
     const funcionarios = await Funcionario.findAll();
-    res.json(funcionarios);
+    // Adicione o URL da imagem a cada funcionário
+    const funcionariosComImagens = funcionarios.map((funcionario) => {
+      return {
+        ...funcionario.toJSON(),
+        foto: funcionario.foto
+          ? `${req.protocol}://${req.get("host")}/uploads/${funcionario.foto}`
+          : null,
+      };
+    });
+    res.json(funcionariosComImagens);
   } catch (error) {
     console.error('Erro ao listar os funcionários:', error);
     res.status(500).json({ error: 'Erro ao listar os funcionários' });
@@ -36,7 +46,14 @@ exports.getEmployeeById = async (req, res) => {
     if (!funcionario) {
       return res.status(404).json({ error: 'Funcionário não encontrado' });
     }
-    res.json(funcionario);
+    // Adicione o URL da imagem ao funcionário
+    const funcionarioComImagem = {
+      ...funcionario.toJSON(),
+      foto: funcionario.foto
+        ? `${req.protocol}://${req.get("host")}/uploads/${funcionario.foto}`
+        : null,
+    };
+    res.json(funcionarioComImagem);
   } catch (error) {
     console.error('Erro ao buscar o funcionário:', error);
     res.status(500).json({ error: 'Erro ao buscar o funcionário' });
